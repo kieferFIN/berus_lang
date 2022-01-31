@@ -2,20 +2,19 @@ use std::collections::{HashMap, HashSet};
 use std::fmt::{Debug, Formatter};
 use std::hash::{Hash, Hasher};
 
-pub struct Module{
-    pub constants:HashMap<String,ConstantValue>,
-    pub functions:HashMap<String,FunctionDef>
+pub struct Module {
+    pub constants: HashMap<String, ConstantValue>,
+    pub functions: HashMap<String, FunctionDef>,
 }
 
 #[derive(Debug)]
-pub enum TypeInfo{
+pub enum TypeInfo {
     Integer,
     Float,
-    Struct(String)
-
+    Struct(String),
 }
 
-impl From<String> for TypeInfo{
+impl From<String> for TypeInfo {
     fn from(type_name: String) -> Self {
         match type_name.as_str() {
             "int" => TypeInfo::Integer,
@@ -26,16 +25,15 @@ impl From<String> for TypeInfo{
 }
 
 #[derive(Debug)]
-pub enum ConstantValue{
+pub enum ConstantValue {
     Integer(i32),
-    Float(f32)
+    Float(f32),
 }
 
 #[derive(Debug)]
 pub struct FunctionDef {
-    pub parameters:Vec<(String,TypeInfo)>,
-    pub return_type: Option<TypeInfo>
-
+    pub parameters: Vec<(String, TypeInfo)>,
+    pub return_type: Option<TypeInfo>,
 }
 
 /*pub struct Constant{
