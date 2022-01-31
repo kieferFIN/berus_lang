@@ -28,6 +28,7 @@ impl From<String> for TypeInfo {
 pub enum ConstantValue {
     Integer(i32),
     Float(f32),
+    String(String)
 }
 
 #[derive(Debug)]

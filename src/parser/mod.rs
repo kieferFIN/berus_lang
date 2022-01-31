@@ -1,3 +1,5 @@
+mod constant;
+
 use std::collections::{HashMap, HashSet};
 use nom::branch::alt;
 use nom::{IResult, Parser};
@@ -6,12 +8,13 @@ use nom::character::complete::{alphanumeric1, multispace1, multispace0, digit1, 
 use nom::character::{is_alphabetic, is_alphanumeric, is_digit};
 use nom::multi::{many0, separated_list0};
 use nom::sequence::{delimited, pair, preceded, tuple};
-use std::str::FromStr;
 use nom::combinator::{map, map_opt, opt};
-use nom::error::ErrorKind::Tag;
 use nom::number::complete::float;
 
+use std::str::FromStr;
+
 use crate::ast::{ConstantValue, FunctionDef, Module, TypeInfo};
+use crate::parser::constant::parse_constant_def;
 
 pub fn parse(input: &str) -> IResult<&str, Module> {
     enum ModuleItem {
@@ -46,15 +49,7 @@ fn parse_function_def(input: &str) -> IResult<&str, (String, FunctionDef)> {
     Ok((input, (name, FunctionDef { parameters, return_type })))
 }
 
-fn parse_constant_def(input: &str) -> IResult<&str, (String, ConstantValue)> {
-    let (input, _) = tuple((multispace0, tag("const"), multispace1))(input)?;
-    let (input, name) = parse_name(input)?;
-    let (input, _) = tuple((multispace0, tag("=")))(input)?;
-    let (input, value) = parse_constant_value(input)?;
-    let (input, _) = tuple((multispace0, tag(";")))(input)?;
 
-    Ok((input, (name, value)))
-}
 
 fn parse_type_info(input: &str) -> IResult<&str, TypeInfo> {
     let (input, _) = multispace0(input)?;
@@ -63,20 +58,7 @@ fn parse_type_info(input: &str) -> IResult<&str, TypeInfo> {
     Ok((input, type_info))
 }
 
-fn parse_constant_value(input: &str) -> IResult<&str, ConstantValue> {
-    let (input, _) = multispace0(input)?;
-    let (input, neg) = opt(tag("-"))(input)?;
-    let (input, integer_value) = map(digit1, |v| i32::from_str(v).unwrap())(input)?;
-    let (input, end) = opt(float)(input)?;
 
-    let sign = neg.map_or(1, |_| -1);
-
-    let value = match end {
-        Some(end) => ConstantValue::Float((end + integer_value as f32) * sign as f32),
-        None => ConstantValue::Integer(integer_value * sign)
-    };
-    Ok((input, value))
-}
 
 fn parse_name(input: &str) -> IResult<&str, String> {
     let (input, _) = multispace0(input)?;
