@@ -1,3 +1,2 @@
-const e = 6;
-const r="4d";
-fn rrt(s:int, rt :EE): float;
+let w = a:int -> a+3
+
