@@ -1,2 +1,4 @@
-let w = a:int -> a+3
+let mut w = 3
+let v = w+5
 
+let f = a:Int,b:Float <v> :Int-> a+3+v+self(2,4.5)

@@ -1,5 +1,5 @@
 use std::fmt::{Display, Formatter};
-use crate::ast::{ConstantValue, FunctionDef, TypeInfo, VariableDef};
+use crate::ast::{ConstantValue, FunctionDef, TypeName, VariableDef};
 
 #[derive(Debug)]
 pub struct Expr {
