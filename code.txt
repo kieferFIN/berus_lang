@@ -1,4 +1,2 @@
-let mut w = 3
-let v = w+5
-
-let f = a:Int,b:Float <v> :Int-> a+3+v+self(2,4.5)
+let v = if 5 < 4 ()
+let c = (3,6)

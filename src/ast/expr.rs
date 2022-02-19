@@ -1,22 +1,13 @@
+use std::fmt;
 use std::fmt::{Display, Formatter};
-use crate::ast::{ConstantValue, FunctionDef, TypeName, VariableDef};
 
-#[derive(Debug)]
+use crate::ast::ConstantValue;
+use crate::ast::types::VariableType;
+use crate::ast::utils::str_from_iter;
+
 pub struct Expr {
     pub exprs: Vec<PartialExpr>,
     pub operands: Vec<Operand>,
-}
-
-impl Display for Expr {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        for (expr, op) in self.exprs.iter().zip(&self.operands) {
-            write!(f, " {:?} {:?}", expr, op)?
-        };
-        if let Some(e) = self.exprs.last() {
-            write!(f, " {:?};", e)?
-        };
-        Ok(())
-    }
 }
 
 #[derive(Debug)]
@@ -24,35 +15,43 @@ pub enum Operand {
     //TODO: more operands
     Plus,
     Minus,
+    Lt,
 }
 
-#[derive(Debug)]
 pub enum PartialExpr {
     Block(BlockExpr),
     If(IfExpr),
     FunctionCall(FunctionCallExpr),
     Variable(VariableExpr),
     Lambda(FunctionDef),
+    Tuple(TupleDef),
 }
 
-#[derive(Debug)]
 pub struct BlockExpr {}
 
-#[derive(Debug)]
 pub struct IfExpr {
     pub cond_expr: Expr,
     pub main_branch: Expr,
     pub else_branch: Option<Expr>,
 }
 
-#[derive(Debug)]
 pub struct FunctionCallExpr {
     pub name: String,
     pub params: Vec<Expr>,
 }
 
-#[derive(Debug)]
 pub enum VariableExpr {
     Variable(String),
     Constant(ConstantValue),
+}
+
+pub struct FunctionDef {
+    pub parameters: Vec<(String, VariableType)>,
+    pub closure: Vec<(String, bool)>,
+    pub return_type: VariableType,
+    pub expr: Expr,
+}
+
+pub struct TupleDef {
+    pub items: Vec<Expr>,
 }

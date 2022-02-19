@@ -1,26 +1,17 @@
 use std::str::FromStr;
+
 use nom::branch::alt;
 use nom::bytes::complete::{is_not, tag};
-use nom::character::complete::{digit1, multispace0, multispace1};
+use nom::character::complete::{digit1, multispace0};
 use nom::combinator::{map, opt};
 use nom::IResult;
 use nom::number::complete::float;
-use nom::sequence::{delimited, tuple};
+use nom::sequence::{delimited, preceded};
+
 use crate::ast::ConstantValue;
-use crate::parser::parse_name;
-
-/*pub(crate) fn parse_constant_def(input: &str) -> IResult<&str, (String, ConstantValue)> {
-    let (input, _) = tuple((multispace0, tag("const"), multispace1))(input)?;
-    let (input, name) = parse_name(input)?;
-    let (input, _) = tuple((multispace0, tag("=")))(input)?;
-    let (input, value) = parse_constant_value(input)?;
-    let (input, _) = tuple((multispace0, tag(";")))(input)?;
-
-    Ok((input, (name, value)))
-}*/
 
 pub(crate) fn parse_constant_value(input: &str) -> IResult<&str, ConstantValue> {
-    delimited(multispace0, alt((parse_string_constant, parse_number_constant)), multispace0)(input)
+    preceded(multispace0, alt((parse_string_constant, parse_number_constant)))(input)
 }
 
 fn parse_string_constant(input: &str) -> IResult<&str, ConstantValue> {
