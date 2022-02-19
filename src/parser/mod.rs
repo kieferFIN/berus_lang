@@ -43,7 +43,7 @@ pub(crate) fn parse_variable_type(input: &str) -> IResult<&str, VariableType> {
 
 fn parse_type_info(input: &str) -> IResult<&str, TypeInfo> {
     let (input, _) = multispace0(input)?;
-    alt((parse_name.map(|name| TypeInfo::Struct(name)), parse_func_type))(input)
+    alt((parse_name.map(|name| TypeInfo::Struct(name)), parse_func_type, parse_tuple_type))(input)
 }
 
 fn parse_func_type(input: &str) -> IResult<&str, TypeInfo> {
@@ -51,6 +51,11 @@ fn parse_func_type(input: &str) -> IResult<&str, TypeInfo> {
     let (input, ret) = preceded(pair(multispace0, tag(":")), parse_variable_type)(input)?;
     //let params = params.iter().map(|(m,ti)|VariableType{ mutable: m.is_some(), info: (*ti).clone() }).collect();
     Ok((input, TypeInfo::Function(params, ret.to_string())))
+}
+
+fn parse_tuple_type(input: &str)->IResult<&str,TypeInfo>{
+    let(input,m) = delimited(tag("("),separated_list0_with_spaces(tag(","),parse_type_info ), tag(")"))(input)?;
+    Ok((input,TypeInfo::Tuple(m)))
 }
 
 
