@@ -7,7 +7,7 @@ use nom::multi::many0;
 use nom::sequence::{delimited, pair, preceded, terminated};
 
 use crate::ast::expr::{Expr, FunctionCallExpr, FunctionDef, IfExpr, Operand, PartialExpr, TupleDef, VariableExpr};
-use crate::parser::{parse_name, parse_variable_type};
+use crate::parser::variable::{parse_name, parse_variable_type};
 use crate::parser::constant::parse_constant_value;
 use crate::parser::utils::separated_list0_with_spaces;
 
@@ -65,11 +65,10 @@ fn parse_func_call(input: &str) -> IResult<&str, PartialExpr> {
     Ok((input, PartialExpr::FunctionCall(FunctionCallExpr { name, params })))
 }
 
-pub(crate) fn parse_tuple(input: &str)-> IResult<&str, PartialExpr>{
+pub(crate) fn parse_tuple(input: &str) -> IResult<&str, PartialExpr> {
     let (input, _) = multispace0(input)?;
-    let (input,items) =delimited(tag("("),separated_list0_with_spaces(tag(","),parse_expr),tag(")"))(input)?;
-    Ok((input,PartialExpr::Tuple(TupleDef{ items })))
-
+    let (input, items) = delimited(tag("("), separated_list0_with_spaces(tag(","), parse_expr), tag(")"))(input)?;
+    Ok((input, PartialExpr::Tuple(TupleDef { items })))
 }
 
 fn parse_operand(input: &str) -> IResult<&str, Operand> {

@@ -7,7 +7,7 @@ use crate::ast::states::AstState;
 use crate::ast::types::VariableType;
 use crate::ast::utils::str_from_iter;
 
-impl< S: AstState> Display for Module< S> {
+impl<S: AstState> Display for Module<S> {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         for vd in &self.variables {
             writeln!(f, "{}{}", vd.name, vd.variable)?
@@ -43,7 +43,7 @@ impl Display for PartialExpr {
             PartialExpr::FunctionCall(e) => write!(f, "{}", e),
             PartialExpr::Variable(e) => write!(f, "{}", e),
             PartialExpr::Lambda(e) => write!(f, "{}", e),
-            PartialExpr::Tuple(e) => write!(f, "{}",e)
+            PartialExpr::Tuple(e) => write!(f, "{}", e)
         }
     }
 }
@@ -85,7 +85,7 @@ impl Display for FunctionDef {
 
 impl<'s> Display for TupleDef {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
-        write!(f,"({})",str_from_iter(self.items.iter(),","))
+        write!(f, "({})", str_from_iter(self.items.iter(), ","))
     }
 }
 

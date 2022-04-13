@@ -1,4 +1,4 @@
-use crate::ast::ConstantValue;
+use crate::ast::variable::ConstantValue;
 use crate::ast::types::VariableType;
 
 #[derive(Clone)]

@@ -1,7 +1,8 @@
-use crate::ast::{ConstantValue, Module, VariableName};
+use crate::ast::Module;
 use crate::ast::expr::{BlockExpr, Expr, FunctionCallExpr, FunctionDef, IfExpr, Operand, PartialExpr, TupleDef, VariableExpr};
 use crate::ast::states::{Unverified, Verified};
 use crate::ast::types::{FuncType, TypeInfo, VariableType};
+use crate::ast::variable::{ConstantValue, VariableName};
 use crate::verify::variable_mng::VariableManager;
 
 pub(crate) mod variable_mng;
@@ -11,7 +12,7 @@ const FLOAT_TYPE: &'static str = "Float";
 const STRING_TYPE: &'static str = "String";
 const BOOL_TYPE: &'static str = "Bool";
 
-impl Module< Unverified> {
+impl Module<Unverified> {
     pub fn verify(mut self) -> Result<Module<Verified>, String> {
         let mut variable_mng = VariableManager::new();
         for VariableName { name, variable } in &mut self.variables {
@@ -39,18 +40,16 @@ impl Expr {
     }
 }
 
-fn check_valid_operand(lhs: &VariableType, op: &Operand, rhs: &VariableType) -> Result<VariableType,String> {
+fn check_valid_operand(lhs: &VariableType, op: &Operand, rhs: &VariableType) -> Result<VariableType, String> {
     match (&lhs.info, op, &rhs.info) {
-        (TypeInfo::Struct(l), Operand::Plus, TypeInfo::Struct(r)) if l==r && (l==INT_TYPE || l ==FLOAT_TYPE) => Ok(VariableType{mutable:true, info:lhs.info.clone()}),
-        (TypeInfo::Struct(l), Operand::Minus, TypeInfo::Struct(r)) if l==r && (l==INT_TYPE || l ==FLOAT_TYPE) => Ok(VariableType{mutable:true, info:lhs.info.clone()}),
-        (TypeInfo::Struct(l), Operand::Lt, TypeInfo::Struct(r)) if l==r && (l==INT_TYPE || l ==FLOAT_TYPE) => Ok(VariableType{mutable:true, info:TypeInfo::Struct(BOOL_TYPE.to_string())}),
+        (TypeInfo::Struct(l), Operand::Plus, TypeInfo::Struct(r)) if l == r && (l == INT_TYPE || l == FLOAT_TYPE) => Ok(VariableType { mutable: true, info: lhs.info.clone() }),
+        (TypeInfo::Struct(l), Operand::Minus, TypeInfo::Struct(r)) if l == r && (l == INT_TYPE || l == FLOAT_TYPE) => Ok(VariableType { mutable: true, info: lhs.info.clone() }),
+        (TypeInfo::Struct(l), Operand::Lt, TypeInfo::Struct(r)) if l == r && (l == INT_TYPE || l == FLOAT_TYPE) => Ok(VariableType { mutable: true, info: TypeInfo::Struct(BOOL_TYPE.to_string()) }),
         _ => Result::Err(format!("not defined: {} {:?} {}", lhs, op, rhs))
     }
     //TODO: check operands for local types
 
     //Err(format!("not defined: {} {:?} {}", lhs, op, rhs))
-
-
 }
 
 impl PartialExpr {
@@ -92,7 +91,7 @@ impl IfExpr {
                     }
                 }
             }
-        } else { Err(format!("Conditional expression must return {}. found:{}",get_condition_type(), cond_type)) }
+        } else { Err(format!("Conditional expression must return {}. found:{}", get_condition_type(), cond_type)) }
     }
 }
 
@@ -100,7 +99,7 @@ impl FunctionCallExpr {
     fn check_type(&self, variable_mng: &mut VariableManager) -> Result<VariableType, String> {
         match variable_mng.find_variable(&self.name) {
             None => Err(format!("Cannot find variable: {}", &self.name)),
-            Some(VariableType { mutable: _, info: TypeInfo::Function(FuncType{params, return_type: ret}) }) => {
+            Some(VariableType { mutable: _, info: TypeInfo::Function(FuncType { params, return_type: ret }) }) => {
                 if params.len() != self.params.len() {
                     Err(format!("Wrong number of params. expected:{}, found:{}", params.len(), self.params.len()))
                 } else {
@@ -151,16 +150,13 @@ impl FunctionDef {
 }
 
 impl TupleDef {
-    fn check_type(&self, variable_mng: &mut VariableManager) -> Result<VariableType, String>{
+    fn check_type(&self, variable_mng: &mut VariableManager) -> Result<VariableType, String> {
         let mut types = Vec::new();
-        for e in &self.items{
+        for e in &self.items {
             let t = e.check_type(variable_mng)?;
             types.push(t.info);
         }
-/*        let types_r:Result<Vec<_>,_> = self.items.iter().map(|e|e.check_type(variable_mng, std_mod).map(|t|t.info)).collect();
-        let types = types_r?;*/
-        Ok(VariableType{ mutable: false, info: TypeInfo::Tuple(types) })
-
+        Ok(VariableType { mutable: false, info: TypeInfo::Tuple(types) })
     }
 }
 

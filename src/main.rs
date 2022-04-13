@@ -1,9 +1,5 @@
 use std::fs;
 use std::ops::Deref;
-use nom::Finish;
-use berus_lang::ast::{Module};
-use berus_lang::ast::states::Unverified;
-use berus_lang::parser::parse_module;
 use berus_lang::run_env::{DataObj, RunEnv};
 use berus_lang::std_library::StdModBasic;
 

@@ -13,7 +13,7 @@ pub enum TypeInfo {
 }
 
 impl TypeInfo {
-    pub fn empty() ->Self{
+    pub fn empty() -> Self {
         TypeInfo::Tuple(Vec::new())
     }
 }
@@ -32,15 +32,14 @@ impl Display for TypeInfo {
 impl From<&FunctionDef> for FuncType {
     fn from(fd: &FunctionDef) -> Self {
         let params = fd.parameters.iter().map(|(_, t)| t.clone()).collect();
-        FuncType{params, return_type: Box::new(fd.return_type.clone()) }
+        FuncType { params, return_type: Box::new(fd.return_type.clone()) }
     }
 }
 
 #[derive(Clone, PartialEq, Eq)]
-pub struct FuncType{
-    pub(crate) params:Vec<VariableType>,
-    pub(crate) return_type: Box<VariableType>
-
+pub struct FuncType {
+    pub(crate) params: Vec<VariableType>,
+    pub(crate) return_type: Box<VariableType>,
 }
 
 #[derive(Clone, PartialEq, Eq)]

@@ -1,11 +1,12 @@
 use std::collections::HashMap;
 use std::hash::{Hash, Hasher};
+
 use crate::ast::types::TypeInfo;
 
 #[derive(Eq)]
-pub struct StructDef{
-    pub name:String,
-    pub members:HashMap<String,TypeInfo>
+pub struct StructDef {
+    pub name: String,
+    pub members: HashMap<String, TypeInfo>,
 }
 
 impl PartialEq for StructDef {

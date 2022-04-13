@@ -8,7 +8,7 @@ use nom::IResult;
 use nom::number::complete::float;
 use nom::sequence::{delimited, preceded};
 
-use crate::ast::ConstantValue;
+use crate::ast::variable::ConstantValue;
 
 //TODO: add boolean
 pub(crate) fn parse_constant_value(input: &str) -> IResult<&str, ConstantValue> {
