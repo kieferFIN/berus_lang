@@ -10,6 +10,7 @@ use nom::sequence::{delimited, preceded};
 
 use crate::ast::ConstantValue;
 
+//TODO: add boolean
 pub(crate) fn parse_constant_value(input: &str) -> IResult<&str, ConstantValue> {
     preceded(multispace0, alt((parse_string_constant, parse_number_constant)))(input)
 }

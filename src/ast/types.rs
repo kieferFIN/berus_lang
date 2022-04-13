@@ -1,23 +1,14 @@
 use std::fmt;
 use std::fmt::{Display, Formatter};
-use std::str::FromStr;
 
-use nom::Finish;
-
-use crate::ast::ConstantValue;
 use crate::ast::expr::FunctionDef;
 use crate::ast::utils::str_from_iter;
-use crate::parser::parse_variable_type;
 
-#[derive(PartialEq, Clone)]
+#[derive(PartialEq, Eq, Clone)]
 pub enum TypeInfo {
-    //Integer,
-    //Float,
-    //String,
     Struct(String),
-    //Enum(String),
     Tuple(Vec<TypeInfo>),
-    Function(Vec<VariableType>, String),
+    Function(FuncType),
     Unknown,
 }
 
@@ -32,47 +23,31 @@ impl Display for TypeInfo {
         match self {
             TypeInfo::Struct(name) => write!(f, "{}", name),
             TypeInfo::Tuple(v) => write!(f, "({})", str_from_iter(v.iter(), ",")),
-            TypeInfo::Function(p, r) => write!(f, "<{}>:{}", str_from_iter(p.iter(), ","), r),
+            TypeInfo::Function(func) => write!(f, "<{}>:{}", str_from_iter(func.params.iter(), ","), func.return_type),
             TypeInfo::Unknown => write!(f, "#UNKNOWN")
         }
     }
 }
 
-impl From<&ConstantValue> for TypeInfo {
-    fn from(c: &ConstantValue) -> Self {
-        TypeInfo::Struct(match c {
-            ConstantValue::Integer(_) => "Int",
-            ConstantValue::Float(_) => "Float",
-            ConstantValue::String(_) => "String"
-        }.to_string())
-    }
-}
-
-impl From<&FunctionDef> for TypeInfo {
+impl From<&FunctionDef> for FuncType {
     fn from(fd: &FunctionDef) -> Self {
         let params = fd.parameters.iter().map(|(_, t)| t.clone()).collect();
-        TypeInfo::Function(params, fd.return_type.to_string())
+        FuncType{params, return_type: Box::new(fd.return_type.clone()) }
     }
 }
 
-#[derive(Clone, PartialEq)]
+#[derive(Clone, PartialEq, Eq)]
+pub struct FuncType{
+    pub(crate) params:Vec<VariableType>,
+    pub(crate) return_type: Box<VariableType>
+
+}
+
+#[derive(Clone, PartialEq, Eq)]
 pub struct VariableType {
     pub mutable: bool,
     pub info: TypeInfo,
 }
-
-
-impl Display for VariableType {
-    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
-        write!(f, "{}{}", if self.mutable { "mut " } else { "" }, self.info)
-    }
-}
-
-/*impl Default for VariableType {
-    fn default() -> Self {
-        VariableType{ mutable: f, info: TypeInfo::Unknown }
-    }
-}*/
 
 impl VariableType {
     pub fn check_expected(self, expected: &VariableType) -> Result<VariableType, String> {
@@ -94,10 +69,8 @@ impl VariableType {
     }
 }
 
-impl FromStr for VariableType {
-    type Err = String;
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        parse_variable_type(s).finish().map(|(_, t)| t).map_err(|e| e.to_string())
+/*impl<'s> VariableType<'s>{
+    pub(crate) fn from_str(st: &'s str) -> Result<Self, String>{
+        parse_variable_type(st).finish().map(|(_, t)| t).map_err(|e| e.to_string())
     }
-}
+}*/

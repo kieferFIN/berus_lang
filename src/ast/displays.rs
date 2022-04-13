@@ -4,9 +4,10 @@ use std::fmt::{Display, Formatter};
 use crate::ast::{Module, VariableDef};
 use crate::ast::expr::{Expr, FunctionCallExpr, FunctionDef, IfExpr, PartialExpr, TupleDef, VariableExpr};
 use crate::ast::states::AstState;
+use crate::ast::types::VariableType;
 use crate::ast::utils::str_from_iter;
 
-impl<S: AstState> Display for Module<S> {
+impl< S: AstState> Display for Module< S> {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         for vd in &self.variables {
             writeln!(f, "{}{}", vd.name, vd.variable)?
@@ -59,7 +60,7 @@ impl Display for IfExpr {
 
 impl Display for FunctionCallExpr {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
-        write!(f, "{}({})", self.name, str_from_iter(self.params.iter(), ","))
+        write!(f, "CALL {}({})", self.name, str_from_iter(self.params.iter(), ","))
     }
 }
 
@@ -82,8 +83,14 @@ impl Display for FunctionDef {
     }
 }
 
-impl Display for TupleDef {
+impl<'s> Display for TupleDef {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         write!(f,"({})",str_from_iter(self.items.iter(),","))
+    }
+}
+
+impl Display for VariableType {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        write!(f, "{}{}", if self.mutable { "mut " } else { "" }, self.info)
     }
 }

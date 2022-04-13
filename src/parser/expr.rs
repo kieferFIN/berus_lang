@@ -1,10 +1,10 @@
 use nom::{IResult, Parser};
 use nom::branch::alt;
 use nom::bytes::complete::tag;
-use nom::character::complete::{multispace0, multispace1, one_of};
+use nom::character::complete::{multispace0, one_of};
 use nom::combinator::opt;
 use nom::multi::many0;
-use nom::sequence::{delimited, pair, preceded, terminated, tuple};
+use nom::sequence::{delimited, pair, preceded, terminated};
 
 use crate::ast::expr::{Expr, FunctionCallExpr, FunctionDef, IfExpr, Operand, PartialExpr, TupleDef, VariableExpr};
 use crate::parser::{parse_name, parse_variable_type};
@@ -32,7 +32,7 @@ fn parse_partial_expr(input: &str) -> IResult<&str, PartialExpr> {
 }
 
 fn parse_variable(input: &str) -> IResult<&str, PartialExpr> {
-    let (input, v) = preceded(multispace0, alt((parse_name.map(|name| VariableExpr::Variable(name)), parse_constant_value.map(|c| VariableExpr::Constant(c)))))(input)?;
+    let (input, v) = preceded(multispace0, alt((parse_name.map(|name| VariableExpr::Variable(name.to_string())), parse_constant_value.map(|c| VariableExpr::Constant(c)))))(input)?;
     Ok((input, PartialExpr::Variable(v)))
 }
 
@@ -46,7 +46,6 @@ fn parse_lambda(input: &str) -> IResult<&str, PartialExpr> {
     let (input, expr) = parse_expr(input)?;
 
     let closure = closure.map(|c| c.iter().map(|(m, name)| (name.to_owned(), m.is_some())).collect()).unwrap_or(Vec::new());
-    //let parameters= parameters.iter().map(|(m,n,t)|(n.to_owned(),t.to_owned(),m.is_some())).collect();
     Ok((input, PartialExpr::Lambda(FunctionDef { parameters, closure, return_type, expr })))
 }
 

@@ -1,3 +1,2 @@
-let v = if 5 < 4 ()
-let c:(Int,Int) = (3,6)
-let f = <a:(Int,Float)>:Int -> 3+a
+let fib = <a:Int>:Int -> if a<3 1 else self_fn(a-1)+self_fn(a-2)
+let f = fib(10)

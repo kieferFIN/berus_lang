@@ -1,25 +1,25 @@
-use std::fmt::{Debug, Display, Formatter};
-use std::str::FromStr;
-
-use nom::Finish;
+use std::collections::{ HashSet};
+use std::fmt::{Debug};
 
 use crate::ast::expr::Expr;
-use crate::ast::states::{AstState, Unverified, Verified};
-use crate::ast::types::VariableType;
-use crate::parser::parse_module;
+use crate::ast::states::AstState;
+use crate::ast::structs::StructDef;
+use crate::ast::types::{ VariableType};
 
 pub mod expr;
 pub mod types;
 pub mod states;
-mod utils;
 pub mod displays;
+pub mod structs;
+mod utils;
 
-pub struct Module<S: AstState> {
+pub struct Module< S: AstState> {
     pub variables: Vec<VariableName>,
+    pub structs: HashSet<StructDef>,
     pub _state: std::marker::PhantomData<S>,
 }
 
-impl FromStr for Module<Unverified> {
+/*impl<'s> FromStr for Module<'s, Unverified> {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -28,22 +28,22 @@ impl FromStr for Module<Unverified> {
             Err(format!("unparsed: {}", unparsed))
         } else { Ok(module) }
     }
-}
+}*/
 
-impl FromStr for Module<Verified> {
+/*impl FromStr for Module<Verified> {
     type Err = String;
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let m: Module<Unverified> = s.parse()?;
         m.verify()
     }
-}
+}*/
 
 pub struct VariableDef {
     pub value: Expr,
     pub v_type: VariableType,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum ConstantValue {
     Integer(i32),
     Float(f32),
